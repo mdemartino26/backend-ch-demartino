@@ -23,7 +23,7 @@ class ProductManager {
 
     addProduct(productData) {
         // Como me fijo si se completaron todos los campos
-        if (!productData.title || !productData.description || !productData.price || !productData.thumbnail || !productData.code || !productData.stock || !productData.category) {
+        if (!productData.title || !productData.description || !productData.price || !productData.code || !productData.stock || !productData.category) {
             console.error("Todos los campos son obligatorios.");
             return;
         }
