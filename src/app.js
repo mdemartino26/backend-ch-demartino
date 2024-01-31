@@ -1,56 +1,23 @@
+// app.js
 const express = require('express');
 const app = express();
 const PORT = 8080;
-const productos = "./products.json";  //Trae los productos del Json
-const ProductManager = require('./productManager');  // Trae el PM
-const fs = require('fs');
+const productRouter = require('./routes/products.router.js');
+const cartRouter = require('./routes/carts.router.js');
 
 
-// Crea instancia de PM
-const productManager = new ProductManager(productos);
-productManager.loadProductsFromFile();
+
 
 app.use(express.json());
+app.use(express.static("public"));
 
-
-//Trae productos 
-app.get('/products', async (req, res) => {
-  try {
-    const limit = req.query.limit;
-    const products = await productManager.getProducts();
-
-    if (limit) {
-      res.json(products.slice(0, limit));
-    } else {
-      res.json(products);
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-//Trae productos por ID
-app.get('/products/:pid', async (req, res) => {
-  try {
-    const productId = parseInt(req.params.pid);
-    const product = await productManager.getProductById(productId);
-
-    if (product) {
-      res.json(product);
-    } else {
-      res.status(404).json({ error: 'Product not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+// Configura routes for PM and CM
+app.use('/api/products', productRouter);
+app.use('/api/carts', cartRouter);
 
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-  console.log("Productos:", productManager.getProducts());
 });
 
 app.get('/', (req, res) => {
