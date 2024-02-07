@@ -61,8 +61,13 @@ class ProductManager {
         console.log("Producto agregado:", newProduct);
     }
   
-    getProducts() {
-      return this.products;
+    async getProducts() {
+      try {
+        return this.products;
+      } catch (error) {
+        console.log("Error al leer el archivo", error);
+        throw error;
+      }
     }
   
     getProductById(id) {

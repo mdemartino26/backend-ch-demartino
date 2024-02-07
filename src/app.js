@@ -16,8 +16,9 @@ app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
 app.use(express.json());
-const path = require('path');
-app.use(express.static(path.join(__dirname, 'src', 'public')));
+
+//Middleware
+app.use(express.static("./src/public"));
 
 // Configura routes for PM and CM
 app.use('/api/products', productRouter);
@@ -32,11 +33,12 @@ const httpServer = app.listen(PORT, () => {
 });
 
 
-const ProductManager = require("./controllers/productManager.js")
-const productManager = require("./models/products.json");
+const ProductManager = require("./controllers/productManager.js");
+const productManager = new ProductManager("../src/models/products.json");
 
 const io = socket(httpServer);
 
-io.on('connection', () => {
+io.on('connection', async(socket) => {
   console.log("un cliente se conectó");
+  socket.emit("productos", await productManager.getProducts());
 })

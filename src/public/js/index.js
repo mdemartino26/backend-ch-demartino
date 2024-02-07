@@ -1,3 +1,5 @@
 const socket = io();
 
-socket.emit("hola", "hola server");
+socket.on("productos", (data) => {
+    console.log(data);
+});
