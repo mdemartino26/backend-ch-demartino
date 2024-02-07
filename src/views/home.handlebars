@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
-    <h1>Listado de Productos</h1>
-    <ul>
-        {{#each products}}
-            <li>{{this}}</li>
-        {{/each}}
-    </ul>
-</body>
-</html>
+<h1>Mis productos</h1>
+
+<div class="cardsContainer">
+{{#each productos}}
+<div class="card">
+    <p> {{this.title}} </p>
+    <p> {{this.description}} </p>
+    <p> {{this.price}} </p>
+</div>
+{{/each}}
+</div>

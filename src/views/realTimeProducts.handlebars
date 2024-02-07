@@ -1,42 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Time Products</title>
-</head>
-<body>
-    <h1>Listado de Productos en Tiempo Real</h1>
-    <ul id="productList">
-        {{#each products}}
-            <li>{{this}}</li>
-        {{/each}}
-    </ul>
+<h1>Real time products</h1>
 
-    <form id="productForm">
-        <input type="text" id="productName" placeholder="Nombre del producto">
-        <input type="submit" value="Agregar Producto">
-    </form>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-
-        // Manejar la recepción de nuevos productos
-        socket.on('newProduct', product => {
-            const productList = document.getElementById('productList');
-            const newProduct = document.createElement('li');
-            newProduct.textContent = product;
-            productList.appendChild(newProduct);
-        });
-
-        // Enviar el nuevo producto al servidor cuando se envía el formulario
-        document.getElementById('productForm').addEventListener('submit', event => {
-            event.preventDefault();
-            const productName = document.getElementById('productName').value;
-            socket.emit('addProduct', productName);
-            document.getElementById('productName').value = '';
-        });
-    </script>
-</body>
-</html>
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="js/index.js"></script>

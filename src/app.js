@@ -5,6 +5,9 @@ const PORT = 8080;
 const exphbs = require("express-handlebars");
 const productRouter = require('./routes/products.router.js');
 const cartRouter = require('./routes/carts.router.js');
+const viewsRouter = require("./routes/views.router.js");
+const socket = require("socket.io");
+
 
 
 // Configura handlebars
@@ -13,29 +16,27 @@ app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
 app.use(express.json());
-app.use(express.static("public"));
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 // Configura routes for PM and CM
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 
+app.use("/", viewsRouter);
 
-app.listen(PORT, () => {
+
+
+const httpServer = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-app.get('/', (req, res) => {
-  res.render('index', {title: "hola"});
-});
 
-//const socket = require("socket.io");
+const ProductManager = require("./controllers/productManager.js")
+const productManager = require("./models/products.json");
 
-//const io = socket(PORT);
+const io = socket(httpServer);
 
-//io.on("connection", (socket) => {
- // console.log("un cliente se conectó conmigo");
-
-//  socket.on("mensaje", (data) => {
-//    console.log(data);
-//  })
-//})
+io.on('connection', () => {
+  console.log("un cliente se conectó");
+})
