@@ -1,7 +1,7 @@
 const express = require('express'); 
 const router = express.Router();
-const CartManager = require("../controllers/cartManager.js");
-const cartManager = new CartManager("./src/models/carts.json");
+//const CartManager = require("../controllers/cartManager.js");
+//const cartManager = new CartManager("./src/models/carts.json");
 
 // Trae todos los carritos
 router.get("/", (req, res) => {

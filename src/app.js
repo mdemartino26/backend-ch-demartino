@@ -7,7 +7,7 @@ const productRouter = require('./routes/products.router.js');
 const cartRouter = require('./routes/carts.router.js');
 const viewsRouter = require("./routes/views.router.js");
 const socket = require("socket.io");
-
+require("./database.js");
 
 
 // Configura handlebars

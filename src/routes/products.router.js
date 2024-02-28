@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const ProductManager = require("../controllers/productManager.js");
-const productManager = new ProductManager("./src/models/carts.json");
+const ProductManager = require("../controllers//productManager.js");
+const productManager = new ProductManager();
 
 
 
@@ -25,8 +25,9 @@ const productManager = new ProductManager("./src/models/carts.json");
 
 // buscar producto por Id
 router.get('/:pid', async (req, res) => {
+  const productId = req.params.pid;
   try {
-    const productId = parseInt(req.params.pid);
+  
     const product = await productManager.getProductById(productId);
 
     if (product) {
@@ -60,7 +61,7 @@ router.get('/:pid', async (req, res) => {
 // Actualizar producto
 router.put('/:pid', (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
+    const productId = req.params.pid;
     const updatedFields = req.body;
     productManager.updateProduct(productId, updatedFields);
     res.json({ message: 'Product updated successfully' });
@@ -73,7 +74,7 @@ router.put('/:pid', (req, res) => {
 // Borrar productos
 router.delete('/:pid', (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
+    const productId = req.params.pid;
     productManager.deleteProduct(productId);
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
