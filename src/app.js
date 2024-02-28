@@ -34,11 +34,25 @@ const httpServer = app.listen(PORT, () => {
 
 
 const ProductManager = require("./controllers/productManager.js");
-const productManager = new ProductManager("../src/models/products.json");
+const productManager = new ProductManager("./src/models/products.json");
 
 const io = socket(httpServer);
 
 io.on('connection', async(socket) => {
   console.log("un cliente se conectó");
-  socket.emit("productos", await productManager.getProducts());
+  
+  const products = await productManager.getProducts();
+  socket.emit("productos", products);
+
+  socket.on("eliminarProducto", async (id) => {
+    await productManager.deleteProduct(id);
+
+    io.sockets.emit("productos", await productManager.getProducts());
+  })
+
+  socket.on("agregarProducto", async (producto) => {
+    await productManager.addProduct(producto);
+    io.sockets.emit("productos", await productManager.getProducts());
+  })
 })
+
