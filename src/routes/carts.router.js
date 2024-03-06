@@ -4,9 +4,9 @@ const CartManager = require("../controllers/cartManager.js");
 const cartManager = new CartManager();
 
 // Trae todos los carritos
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const allCarts = cartManager.getAllCarts();
+    const allCarts = await cartManager.getAllCarts();
     res.json(allCarts);
   } catch (error) {
     console.error("Error al obtener todos los carritos", error);
@@ -55,8 +55,8 @@ router.post("/:cid/product/:pid", async (req, res) => {
 // Trae todos los carritos con productos completos
 router.get("/", async (req, res) => {
   try {
-    const allCarts = await cartManager.getAllCartsPopulated();
-    res.json(allCarts);
+    const allCarts = await cartManager.getAllCarts();
+    res.json({ carts: carts });
   } catch (error) {
     console.error("Error al obtener todos los carritos", error);
     res.status(500).json({ error: "Error interno del servidor", details: error.message });

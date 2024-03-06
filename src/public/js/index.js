@@ -50,3 +50,36 @@ const agregarProducto = () => {
 
     socket.emit("agregarProducto", producto);
 }
+
+const renderCarts = (carts) => {
+    const contenedorCarts = document.getElementById("contenedorCarts");
+    contenedorCarts.innerHTML = "";
+
+    carts.forEach(cart => {
+        const cartCard = document.createElement("div");
+        cartCard.classList.add("cart-card");
+
+        const productList = document.createElement("ul");
+        productList.classList.add("product-list");
+
+        cart.products.forEach(product => {
+            const productItem = document.createElement("li");
+            productItem.innerHTML = `
+                <span>${product.product.title}</span>
+                <span>Precio: ${product.product.price}</span>
+                <span>Cantidad: ${product.quantity}</span>
+            `;
+            productList.appendChild(productItem);
+        });
+
+        const total = cart.products.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0);
+
+        cartCard.innerHTML = `
+            <h3>Carrito ID: ${cart._id}</h3>
+            <h4>Total: ${total}</h4>
+        `;
+        cartCard.appendChild(productList);
+
+        contenedorCarts.appendChild(cartCard);
+    });
+};
