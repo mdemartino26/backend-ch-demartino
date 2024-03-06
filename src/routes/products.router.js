@@ -42,6 +42,50 @@ router.get('/:pid', async (req, res) => {
 });
 
 
+router.get('/', async (req, res) => {
+  try {
+    let { limit, page, sort, query } = req.query;
+
+    // Establecer valores por defecto si no se proporcionan en la consulta
+    limit = parseInt(limit) || 10;
+    page = parseInt(page) || 1;
+    sort = sort === 'asc' ? 1 : sort === 'desc' ? -1 : null;
+    query = query || {};
+
+    // Realizar la búsqueda de productos según los parámetros
+    const products = await productManager.getProducts({
+      limit,
+      page,
+      sort,
+      query
+    });
+
+    // Calcular el total de páginas
+    const totalProducts = await productManager.getProductsCount(query);
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Construir la respuesta
+    const response = {
+      status: 'success',
+      payload: products,
+      totalPages: totalPages,
+      prevPage: page > 1 ? page - 1 : null,
+      nextPage: page < totalPages ? page + 1 : null,
+      page: page,
+      hasPrevPage: page > 1,
+      hasNextPage: page < totalPages,
+      prevLink: page > 1 ? `/?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
+      nextLink: page < totalPages ? `/?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
    router.post("/", async (req,res) => {
     const productData = req.body;
 
