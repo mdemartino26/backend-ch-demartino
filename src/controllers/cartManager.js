@@ -50,6 +50,17 @@ class CartManager {
             throw error;
         }
     }
+
+    async getAllCarts() {
+        try {
+            const carts = await CartModel.find();
+            return carts;
+        } catch (error) {
+            console.error("Error al obtener todos los carritos: ", error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = CartManager;
