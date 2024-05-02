@@ -6,19 +6,39 @@ const UserModel = require("../models/user.model.js");
 
 router.post("/register", async (req,res) => {
     const {email, password} = req.body;
-    try {
-        const usuario = await UserModel.findOne({email: email});
+    let rol = "usuario"; // Establecer rol predeterminado como "usuario"
 
-        if(usuario){
-            if(usuario.password === password) {
-                req.session.login = true;
-                req.session.user = usuario;
-                res.redirect("/realtimeproducts");
-            } else {
-                res.status(401).send({error: "Contraseña no válida"});
-            }
+    if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
+        rol = "admin"; // Establecer rol como "admin" para el usuario administrador
+    }
+    
+    try {
+        // Validar si el usuario es el administrador
+        if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
+            // Crear un objeto de usuario con el rol de administrador
+            const adminUser = {
+                email: "adminCoder@coder.com",
+                password: "adminCod3r123",
+                rol: "admin"
+            };
+            // Establecer la sesión del usuario administrador
+            req.session.login = true;
+            req.session.user = adminUser;
+            res.redirect("/realtimeproducts");
         } else {
-            res.status(404).send({error: "Usuario no encontrado"});
+            // Buscar al usuario en la base de datos
+            const usuario = await UserModel.findOne({email: email});
+            if(usuario){
+                if(usuario.password === password) {
+                    req.session.login = true;
+                    req.session.user = usuario;
+                    res.redirect("/realtimeproducts");
+                } else {
+                    res.status(401).send({error: "Contraseña no válida"});
+                }
+            } else {
+                res.status(404).send({error: "Usuario no encontrado"});
+            }
         }
     } catch (error) {
         res.status(400).send({error: "Error en el login"});
@@ -47,7 +67,8 @@ router.post("/login", async (req, res) => {
             last_name,
             email,
             password,
-            age
+            age,
+            rol: "usuario"
         });
 
         await newUser.save();

@@ -22,8 +22,8 @@ router.get("/", async (req,res) => {
 
 router.get("/realtimeproducts", async (req,res) => {
     try{
-
-      res.render("realtimeproducts", { user: req.session.user });
+      const isAdmin = req.session.user.email === "adminCoder@coder.com";
+      res.render("realtimeproducts", { user: req.session.user, isAdmin });
     } catch (error) {
      console.log("error al obtener productos");
      res.status(500).json({ error: "Error interno del servidor"});

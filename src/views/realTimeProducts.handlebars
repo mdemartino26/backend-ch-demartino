@@ -1,7 +1,9 @@
 <h1>Bienvenido {{user.first_name}} {{user.last_name}}</h1>
 <p>Email: {{user.email}}</p>
-<p>Rol: {{user.role}}</p>
-  <a href="/api/sessions/logout">Logout</a>
+{{#if isAdmin}}
+  <p>Rol: {{user.rol}}</p>
+{{/if}}
+<a href="/api/sessions/logout">Logout</a>
 
 <h2>Real time products</h2>
 
@@ -16,7 +18,7 @@
   <input type="text" id="thumbnail" placeholder="Sin Imagen" />
   <input type="text" id="code" placeholder="Codigo" />
   <input type="number" id="stock" placeholder="Stock" />
- <input type="text" id="category" placeholder="Categoria" />
+  <input type="text" id="category" placeholder="Categoria" />
   <button id="btnEnviar">Enviar</button>
 </form>
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
