@@ -15,7 +15,7 @@ router.get("/", async (req,res) => {
 
     res.render("home", {productos: productos})
    } catch (error) {
-    console.log("errr al obtener productos");
+    console.log("error al obtener productos");
     res.status(500).json({ error: "Error interno del servidor"});
    }
 })
@@ -23,12 +23,13 @@ router.get("/", async (req,res) => {
 router.get("/realtimeproducts", async (req,res) => {
     try{
 
-     res.render("realtimeproducts", { usuario: req.session.usuario })
+      res.render("realtimeproducts", { user: req.session.user });
     } catch (error) {
      console.log("error al obtener productos");
      res.status(500).json({ error: "Error interno del servidor"});
     }
  })
+
 
  router.get("/carts/:cid", async (req, res) => {
    const cartId = req.params.cid;
