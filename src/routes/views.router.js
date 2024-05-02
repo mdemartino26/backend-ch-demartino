@@ -7,6 +7,8 @@ const productManager = new ProductManager("./src/models/products.json");
 const CartManager = require("../controllers/cartManager.js");
 const cartManager = new CartManager("./src/models/carts.json");
 
+
+
 router.get("/", async (req,res) => {
    try{
     const productos = await productManager.getProducts();
@@ -21,7 +23,7 @@ router.get("/", async (req,res) => {
 router.get("/realtimeproducts", async (req,res) => {
     try{
 
-     res.render("realtimeproducts")
+     res.render("realtimeproducts", { usuario: req.session.usuario })
     } catch (error) {
      console.log("error al obtener productos");
      res.status(500).json({ error: "Error interno del servidor"});
@@ -39,6 +41,25 @@ router.get("/realtimeproducts", async (req,res) => {
      res.status(500).json({ error: "Error interno del servidor", details: error.message });
    }
  });
+
+ router.get("/login", (req, res) => {
+  try {
+    res.render("login");
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({ error: "Error interno del servidor", details: error.message });
+  }
  
+});
+
+router.get("/register", (req, res) => {
+  try {
+    res.render("register");
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({ error: "Error interno del servidor", details: error.message });
+  }
+ 
+});
 
 module.exports = router;

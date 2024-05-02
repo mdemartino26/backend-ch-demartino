@@ -8,6 +8,11 @@ const cartRouter = require('./routes/carts.router.js');
 const viewsRouter = require("./routes/views.router.js");
 const socket = require("socket.io");
 require("./database.js");
+const MongoStore = require("connect-mongo");
+const session = require('express-session'); 
+const userRouter = require("./routes/user.router.js");
+const sessionRouter = require("./routes/sessions.router.js");
+const UserModel = require("./models/user.model.js");
 
 
 // Configura handlebars
@@ -15,16 +20,41 @@ app.engine("handlebars", exphbs.engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
-app.use(express.json());
-
 //Middleware
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 app.use(express.static("./src/public"));
+app.use(session({
+  secret: "secretcoder",
+  resave: true,
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: "mongodb+srv://marian:coderhouse@cluster0.x0bkb26.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0",
+    ttl: 100
+  })
+}));
 
 // Configura routes for PM and CM
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 
 app.use("/", viewsRouter);
+
+app.get("/login", (req,res) =>{
+  let usuario = req.query.usuario;
+
+  req.session.usuario = usuario;
+  res.send("Guardamos el usuario por medio de query");
+})
+
+app.get("/usuario", (req, res) => {
+  if(req.session.usuario) {
+    return res.send(`El usuario registrado es el siguiente: ${req.session.usuario}`);
+  }
+})
+
+app.use("/api/users", userRouter);
+app.use("/api/sessions", sessionRouter);
 
 
 
