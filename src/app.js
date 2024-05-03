@@ -17,10 +17,7 @@ const passport = require("passport");
 const GitHubStrategy = require('passport-github2').Strategy;
 const initializePassport = require('./config/passport.config.js');
 const User = require("./models/user.model.js");
-
-
-
-
+const { generateToken, verifyToken } = require("./utils/jwt.js");
 
 
 // Configura handlebars
@@ -54,13 +51,24 @@ app.get("/login", (req,res) =>{
 
   req.session.usuario = usuario;
   res.send("Guardamos el usuario por medio de query");
+  const user = { id: 1, username: "usuario" };
+  const token = generateToken(user);
+  res.json({ token });
 })
 
 app.get("/usuario", (req, res) => {
   if(req.session.usuario) {
     return res.send(`El usuario registrado es el siguiente: ${req.session.usuario}`);
   }
+  const user = { id: 1, username: "usuario" };
+  const token = generateToken(user);
+  res.json({ token });
 })
+
+app.get("/realtimeproducts", verifyToken, (req, res) => {
+  // La ruta solo es accesible si el token es válido
+  res.json({ message: "Acceso autorizado" });
+});
 
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);

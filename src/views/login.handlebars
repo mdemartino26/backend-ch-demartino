@@ -6,6 +6,9 @@
 </head>
 <body>
     <h1>Registro</h1>
+    {{#if error}}
+        <p>{{error}}</p>
+    {{/if}}
     <form action="/api/sessions/login" method="post">
     <label for="first_name">Nombre:</label>
     <input type="text" id="first_name" name="first_name" required><br>
