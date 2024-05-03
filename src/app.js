@@ -13,6 +13,14 @@ const session = require('express-session');
 const userRouter = require("./routes/user.router.js");
 const sessionRouter = require("./routes/sessions.router.js");
 const UserModel = require("./models/user.model.js");
+const passport = require("passport");
+const GitHubStrategy = require('passport-github2').Strategy;
+const initializePassport = require('./config/passport.config.js');
+const User = require("./models/user.model.js");
+
+
+
+
 
 
 // Configura handlebars
@@ -33,6 +41,7 @@ app.use(session({
     ttl: 100
   })
 }));
+
 
 // Configura routes for PM and CM
 app.use('/api/products', productRouter);
@@ -56,6 +65,28 @@ app.get("/usuario", (req, res) => {
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configurar estrategia de autenticación de Passport para GitHub
+
+app.use(session({
+  clientID: "Iv23li3YKCih451lxMbY",
+  clientSecret: "8b09b6d8159421a3def9e8a9dba6bdc4c2b7d1c6",
+  callbackURL: "http://localhost:8080/api/sessions/githubcallback"
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configurar las rutas de autenticación
+app.get('/auth/github', passport.authenticate('github'));
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Autenticación exitosa, redirigir a la página principal o donde corresponda
+    res.redirect('/');
+  });
 
 
 const httpServer = app.listen(PORT, () => {
@@ -87,3 +118,4 @@ io.on('connection', async(socket) => {
   })
 })
 
+initializePassport(passport);

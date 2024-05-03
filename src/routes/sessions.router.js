@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/user.model.js");
+const { createHash, isValidPassword } = require("../utils/utils.js");
+const passport = require("passport");
 
 //Login
 
@@ -13,7 +15,7 @@ router.post("/register", async (req,res) => {
     }
     
     try {
-        // Validar si el usuario es el administrador
+        // Valida si el usuario es el administrador
         if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
             // Crear un objeto de usuario con el rol de administrador
             const adminUser = {
@@ -21,15 +23,15 @@ router.post("/register", async (req,res) => {
                 password: "adminCod3r123",
                 rol: "admin"
             };
-            // Establecer la sesión del usuario administrador
+            // Establece la sesión del usuario administraor
             req.session.login = true;
             req.session.user = adminUser;
             res.redirect("/realtimeproducts");
         } else {
-            // Buscar al usuario en la base de datos
+            // Busca al usuario en la base de datos
             const usuario = await UserModel.findOne({email: email});
             if(usuario){
-                if(usuario.password === password) {
+                if(isValidPassword(password, usuario.password)) {
                     req.session.login = true;
                     req.session.user = usuario;
                     res.redirect("/realtimeproducts");
@@ -66,7 +68,7 @@ router.post("/login", async (req, res) => {
             first_name,
             last_name,
             email,
-            password,
+            password: createHash(password),
             age,
             rol: "usuario"
         });
@@ -83,5 +85,13 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.get("/github", passport.authenticate("github", {scope: ["user:email"]}), (req,res) => {
+})
+
+router.get("/githubcallback", passport.authenticate("github", {failureRedirect: "/login"}), async (req, res) => {
+    req.session.user = req.user;
+    req.session.login = true;
+    res.redirect("/realtimeproducts")
+})
 
 module.exports = router;
