@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
+const config = require('../src/config/config.js');
 
 const ProductSchema = require('./models/product.model');
 
-mongoose.connect("mongodb+srv://marian:coderhouse@cluster0.x0bkb26.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0") 
+mongoose.connect(config.MONGO_URL) 
 .then(() => console.log("Conexion exitosa"))
 .catch(() => console.log("Error en la conexion"))

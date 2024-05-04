@@ -3,11 +3,6 @@ const router = express.Router();
 const UserModel = require("../models/user.model.js");
 const { createHash, isValidPassword } = require("../utils/utils.js");
 const passport = require("passport");
-const jwt = require("../utils/jwt.js");
-
-function generateToken(user) {
-  return jwt.sign(user, secretKey, { expiresIn: "1h" });
-}
 
 //Login
 
@@ -34,16 +29,18 @@ router.post("/register", async (req, res) => {
   try {
     // Valida si el usuario es el administrador
     if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-      // Crea un objeto de usuario con el rol de administrador
-      const adminUser = {
-        email: "adminCoder@coder.com",
-        password: "adminCod3r123",
-        rol: "admin",
-      };
-      // Establece la sesión del usuario administraor
-      req.session.login = true;
-      req.session.user = adminUser;
-      res.redirect("/realtimeproducts");
+        // Crea un objeto de usuario con el rol de administrador
+        const adminUser = {
+            email: "adminCoder@coder.com",
+            password: "adminCod3r123",
+            rol: "admin",
+        };
+        // Establece la sesión del usuario administrador
+        req.session.login = true;
+        req.session.user = adminUser;
+        console.log("Token recibido:", token);
+        localStorage.setItem("email", user.email);
+        localStorage.setItem("password", user.password);
     } else {
       // Busca al usuario en la base de datos
       const usuario = await UserModel.findOne({ email: email });
@@ -51,11 +48,6 @@ router.post("/register", async (req, res) => {
         if (isValidPassword(password, usuario.password)) {
           req.session.login = true;
           req.session.user = usuario;
-          const token = generateToken({
-            email: usuario.email,
-            rol: usuario.rol,
-          });
-          req.session.token = token;
           res.redirect("/realtimeproducts");
         } else {
           res.status(401).send({ error: "Contraseña no válida" });
@@ -109,10 +101,8 @@ router.post("/login", async (req, res) => {
     req.session.login = true;
     req.session.user = newUser;
 
-    const token = generateToken({ email: usuario.email, rol: usuario.rol });
-    req.session.token = token;
-    // Redirigir al usuario antes de enviar cualquier otra respuesta
-    res.redirect("/realtimeproducts");
+    const token = jwt.sign({email, password}, "coderhouse", {expiresIm:"24hs"});
+    res.send({message: "Login exitoso", token});
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     res.status(500).send({ error: "Error interno del servidor" });
@@ -135,4 +125,12 @@ router.get(
   }
 );
 
+
+router.get("/current", (req, res) => {
+    if(req.session.user) {
+      res.json(req.session.user);
+    } else {
+      res.status(401).json({ error: "Usuario no autenticado" });
+    }
+  });
 module.exports = router;

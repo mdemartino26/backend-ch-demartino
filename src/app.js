@@ -1,7 +1,7 @@
 // app.js
 const express = require('express');
 const app = express();
-const PORT = 8080;
+app.use(express.urlencoded({ extended: true }));
 const exphbs = require("express-handlebars");
 const productRouter = require('./routes/products.router.js');
 const cartRouter = require('./routes/carts.router.js');
@@ -17,7 +17,9 @@ const passport = require("passport");
 const GitHubStrategy = require('passport-github2').Strategy;
 const initializePassport = require('./config/passport.config.js');
 const User = require("./models/user.model.js");
-const { generateToken, verifyToken } = require("./utils/jwt.js");
+const config = require('../src/config/config.js');
+
+const PORT = config.PUERTO;
 
 
 // Configura handlebars
@@ -34,7 +36,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   store: MongoStore.create({
-    mongoUrl: "mongodb+srv://marian:coderhouse@cluster0.x0bkb26.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0",
+    mongoUrl: config.MONGO_URL,
     ttl: 100
   })
 }));
@@ -56,16 +58,9 @@ app.get("/login", (req,res) =>{
   res.json({ token });
 })
 
-app.get("/usuario", (req, res) => {
-  if(req.session.usuario) {
-    return res.send(`El usuario registrado es el siguiente: ${req.session.usuario}`);
-  }
-  const user = { id: 1, username: "usuario" };
-  const token = generateToken(user);
-  res.json({ token });
-})
 
-app.get("/realtimeproducts", verifyToken, (req, res) => {
+
+app.get("/realtimeproducts", (req, res) => {
   // La ruta solo es accesible si el token es válido
   res.json({ message: "Acceso autorizado" });
 });
@@ -79,9 +74,9 @@ app.use(passport.session());
 // Configurar estrategia de autenticación de Passport para GitHub
 
 app.use(session({
-  clientID: "Iv23li3YKCih451lxMbY",
-  clientSecret: "8b09b6d8159421a3def9e8a9dba6bdc4c2b7d1c6",
-  callbackURL: "http://localhost:8080/api/sessions/githubcallback"
+  clientID: config.GITHUB_CLIENTID,
+  clientSecret: config.GITHUB_CLIENTSECRET,
+  callbackURL: config.GITHUB_CALLBACK
 }));
 app.use(passport.initialize());
 app.use(passport.session());

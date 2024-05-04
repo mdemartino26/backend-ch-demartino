@@ -6,7 +6,6 @@ socket.on("productos", (data) => {
 });
 
 
-
 const renderProductos= (productos) => {
     const contenedorProductos = document.getElementById("contenedorProductos");
     contenedorProductos.innerHTML = "";

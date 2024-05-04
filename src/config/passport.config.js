@@ -2,15 +2,16 @@ const passport = require("passport");
 const User = require("../models/user.model.js");
 const UserModel = require("../models/user.model.js");
 const GitHubStrategy = require("passport-github2").Strategy;
+const config = require('./config.js');
 
 const initializePassport = () => {
   passport.use(
     "github",
     new GitHubStrategy(
       {
-        clientID: "Iv23li3YKCih451lxMbY",
-        clientSecret: "8b09b6d8159421a3def9e8a9dba6bdc4c2b7d1c6",
-        callbackURL: "http://localhost:8080/api/sessions/githubcallback",
+        clientID: config.GITHUB_CLIENTID,
+        clientSecret: config.GITHUB_CLIENTSECRET,
+        callbackURL: config.GITHUB_CALLBACK,
         scope: ["user:email", "read:user"]
       },
       async (accessToken, refreshToken, profile, done) => {
