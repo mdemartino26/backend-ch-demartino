@@ -127,8 +127,8 @@ io.on('connection', async(socket) => {
 
   socket.on("agregarProducto", async (producto) => {
     try {
-      await productController.addProduct(producto);
-      io.sockets.emit("productos", await productController.getProducts());
+      await productManager.addProduct(producto);
+      io.sockets.emit("productos", await productManager.getProducts());
     } catch (error) {
       console.error("Error al agregar producto:", error);
       socket.emit("error", "Error al agregar producto");

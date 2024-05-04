@@ -15,19 +15,42 @@ router.get("/", async (req, res) => {
   if (!req.session.login) {
       res.redirect("/login");
   } else {
-      res.redirect("/realtimeproducts");
+      res.redirect("/profile");
   }
 });
 
-router.get("/realtimeproducts", async (req,res) => {
+function checkUserRole(req, res, next) {
+  if (req.user && req.user.role === 'usuario') {
+    next(); // Si el usuario tiene el rol correcto, continúa con la siguiente función
+  } else {
+    res.status(403).json({ error: 'No tienes permiso para acceder a esta ruta' }); // Si no, devuelve un error de permiso
+  }
+}
+
+function checkAdminRole(req, res, next) {
+  if (req.user && req.user.role === 'admin') {
+    next(); // Si el usuario tiene el rol de admin, continúa con la siguiente función
+  } else {
+    res.status(403).json({ error: 'No tienes permiso para realizar esta acción' }); // Si no, devuelve un error de permiso
+  }
+}
+
+router.get("/realtimeproducts", checkUserRole, async (req,res) => {
     try{
-      const isAdmin = req.session.user.email === "adminCoder@coder.com";
+      const isAdmin = req.session.user.rol === "Admin";
       res.render("realtimeproducts", { user: req.session.user, isAdmin });
     } catch (error) {
      console.log("error al obtener productos");
      res.status(500).json({ error: "Error interno del servidor"});
     }
  })
+
+ router.get('/profile', (req, res) => { 
+  const isAdmin = req.session.user.rol === "admin";
+  const isUser = req.session.user.rol === "usuario";
+  res.render('profile', { user: req.session.user, isAdmin, isUser });
+});
+
 
 
  router.get("/carts/:cid", async (req, res) => {

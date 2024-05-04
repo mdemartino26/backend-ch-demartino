@@ -1,0 +1,13 @@
+<h1>Bienvenido {{user.first_name}} {{user.last_name}}</h1>
+<p>Email: {{user.email}}</p>
+<p>Rol: {{user.rol}}</p>
+
+{{#if isUser}}
+  <a href="/api/sessions/products" class="btn btn-primary">Ir a comprar</a>
+  <a href="/api/sessions/logout">Logout</a>
+{{/if}}
+
+{{#if isAdmin}}
+  <a href="/administrar-productos" class="btn btn-primary">Administrar productos</a>
+  <a href="/api/sessions/logout">Logout</a>
+{{/if}}

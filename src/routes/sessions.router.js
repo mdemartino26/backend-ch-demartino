@@ -6,6 +6,7 @@ const passport = require("passport");
 
 //Login
 
+
 router.post("/register", async (req, res) => {
   const { email, password } = req.body;
   let rol = "usuario"; // Establecer rol predeterminado como "usuario"
@@ -14,7 +15,7 @@ router.post("/register", async (req, res) => {
     rol = "admin"; // Establecer rol como "admin" para el usuario administrador
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
   if (!emailRegex.test(email)) {
     return res.render("login", { error: "Email no válido" });
@@ -31,8 +32,11 @@ router.post("/register", async (req, res) => {
     if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
         // Crea un objeto de usuario con el rol de administrador
         const adminUser = {
+          first_name: " ",
+          last_name: " ",
             email: "adminCoder@coder.com",
             password: "adminCod3r123",
+            age:" ",
             rol: "admin",
         };
         // Establece la sesión del usuario administrador
@@ -48,7 +52,7 @@ router.post("/register", async (req, res) => {
         if (isValidPassword(password, usuario.password)) {
           req.session.login = true;
           req.session.user = usuario;
-          res.redirect("/realtimeproducts");
+          res.redirect("/profile");
         } else {
           res.status(401).send({ error: "Contraseña no válida" });
         }
@@ -121,7 +125,7 @@ router.get(
   async (req, res) => {
     req.session.user = req.user;
     req.session.login = true;
-    res.redirect("/realtimeproducts");
+    res.redirect("/profile");
   }
 );
 

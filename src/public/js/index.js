@@ -15,7 +15,6 @@ const renderProductos= (productos) => {
         card.classList.add("card");
 
         card.innerHTML = `
-        <p> ${item.id} </p>
         <p> ${item.title} </p>
         <p> ${item.price} </p>
         <button>eliminar</button>`;
@@ -29,7 +28,8 @@ const renderProductos= (productos) => {
 }
 
 const eliminarProducto = (id) => {
-    socket.emit("eliminarProducto", id);
+    console.log("clickeado")
+    setTimeout(socket.emit("eliminarProducto", id), 1000);
 }
 
 document.getElementById("btnEnviar").addEventListener("click", () => {
