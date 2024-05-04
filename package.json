@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/app.js",
-    "start": "node src/app.js"
+    "dev": "nodemon src/app.js --mode desarrollo",
+    "start": "node src/app.js --mode produccion"
   },
   "keywords": [],
   "author": "",

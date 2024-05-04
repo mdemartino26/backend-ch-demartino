@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -7,6 +6,7 @@ const productRouter = require('./routes/products.router.js');
 const cartRouter = require('./routes/carts.router.js');
 const viewsRouter = require("./routes/views.router.js");
 const socket = require("socket.io");
+const server = require('http').createServer(app);
 require("./database.js");
 const MongoStore = require("connect-mongo");
 const session = require('express-session'); 
@@ -21,13 +21,12 @@ const config = require('../src/config/config.js');
 
 const PORT = config.PUERTO;
 
-
 // Configura handlebars
 app.engine("handlebars", exphbs.engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
-//Middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("./src/public"));
@@ -41,13 +40,13 @@ app.use(session({
   })
 }));
 
-
 // Configura routes for PM and CM
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 
 app.use("/", viewsRouter);
 
+// Ruta de login
 app.get("/login", (req,res) =>{
   let usuario = req.query.usuario;
 
@@ -56,10 +55,9 @@ app.get("/login", (req,res) =>{
   const user = { id: 1, username: "usuario" };
   const token = generateToken(user);
   res.json({ token });
-})
+});
 
-
-
+// Ruta protegida por token
 app.get("/realtimeproducts", (req, res) => {
   // La ruta solo es accesible si el token es válido
   res.json({ message: "Acceso autorizado" });
@@ -97,28 +95,45 @@ const httpServer = app.listen(PORT, () => {
 });
 
 
-const ProductManager = require("./controllers/productManager.js");
+const ProductManager= require("./controllers/productManager.js");
 const productManager = new ProductManager("./src/models/products.json");
 
 const io = socket(httpServer);
 
+app.get("/", (req, res) => {
+  productManager.getProducts(req, res);
+});
+
 io.on('connection', async(socket) => {
-  console.log("un cliente se conectó");
+  console.log("Un cliente se conectó");
   
-  const products = await productManager.getProducts();
-  socket.emit("productos", products);
+  try {
+    const products = await productManager.getProducts();
+    socket.emit("productos", products);
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    socket.emit("error", "Error al obtener productos");
+  }
 
   socket.on("eliminarProducto", async (id) => {
-    await productManager.deleteProduct(id);
-
-    io.sockets.emit("productos", await productManager.getProducts());
-    io.socket.emit('carts', carts);
-  })
+    try {
+      await productManager.deleteProduct(id);
+      io.sockets.emit("productos", await productManager.getProducts());
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+      socket.emit("error", "Error al eliminar producto");
+    }
+  });
 
   socket.on("agregarProducto", async (producto) => {
-    await productManager.addProduct(producto);
-    io.sockets.emit("productos", await productManager.getProducts());
-  })
-})
+    try {
+      await productController.addProduct(producto);
+      io.sockets.emit("productos", await productController.getProducts());
+    } catch (error) {
+      console.error("Error al agregar producto:", error);
+      socket.emit("error", "Error al agregar producto");
+    }
+  });
+});
 
 initializePassport(passport);

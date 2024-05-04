@@ -91,6 +91,7 @@ class ProductManager {
   }
 
   async deleteProduct(id) {
+    console.log(id);
     try {
       const deleteProduct = await ProductModel.findByIdAndDelete(id);
 
