@@ -1,15 +1,17 @@
-require('dotenv').config();
+const dotenv = require("dotenv");
+const program = require("../utils/commander.js");
 
-const PUERTO = process.env.PUERTO || 8080;
-const MONGO_URL = process.env.MONGO_URL;
-const GITHUB_CALLBACK = process.env.GITHUB_CALLBACK;
-const GITHUB_CLIENTID = process.env.GITHUB_CLIENTID;
-const GITHUB_CLIENTSECRET = process.env.GITHUB_CLIENTSECRET;
+dotenv.config({
+    path: program.mode === "produccion" ? "./.env.produccion" : "./.env.desarrollo"
+});
 
-module.exports = {
-  PUERTO,
-  MONGO_URL,
-  GITHUB_CALLBACK,
-  GITHUB_CLIENTID,
-  GITHUB_CLIENTSECRET
+const config = {
+    MONGO_URL: process.env.MONGO_URL,
+    PUERTO: process.env.PUERTO || 8080,
+    GITHUB_CALLBACK: process.env.GITHUB_CALLBACK,
+    GITHUB_CLIENTID: process.env.GITHUB_CLIENTID,
+    GITHUB_CLIENTSECRET: process.env.GITHUB_CLIENTSECRET
 };
+
+module.exports = config;
+
